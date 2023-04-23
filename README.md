@@ -1,5 +1,5 @@
 # ce8-nsc
-Numerical Scientific Computing | 2023-spring | AAU (Denmark) \\
+Numerical Scientific Computing | 2023-spring | AAU (Denmark) \
 
 During semester we had to hand in 3 mini projects. 
 
@@ -10,6 +10,6 @@ Creating different implementations of Mandelbrot algorithm (naive, vectorized, n
 - dask implementation
 
 ### 3rd mini project
-- add Docstrings to modules and functions \\
-- unittest \\
+- add Docstrings to modules and functions \
+- unittest \
 - OpenCL implementation
