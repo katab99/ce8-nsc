@@ -1,8 +1,12 @@
 import pyopencl as cl
 import numpy as np
 
-def mandelbrot_cl(re, im, max_iter, thresh):
-    ctx = cl.create_some_context()
+def mandelbrot_cl(re, im, max_iter, thresh, device=None):
+    if device == None:
+        ctx = cl.create_some_context()
+    else:
+        ctx = cl.Context([device])
+    
     queue = cl.CommandQueue(ctx)
     
     C = re + im[:,None]*1j
