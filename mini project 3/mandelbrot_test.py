@@ -1,37 +1,55 @@
 import unittest
-import mandulakenyer as mk
 import numpy as np
-# https://www.blog.pythonlibrary.org/2016/07/20/an-intro-to-coverage-py/
+import time 
+import mandulakenyer as mk
+
 class TestMandelbrot(unittest.TestCase):
-
-    # TODO : need at least 3 test func
-
-    # Test that the output values are symmetric about the y-axis
-    def test_func1(self):
-        re = [-2, 0.5, 600]
-        im = [-1, 1, 400]
-        itr = 100
-        thresh = 2
-
-        M = mk.naive(re, im, itr, thresh)
+    # Set up test data
+    def setUp(self):
+        self.re_scale = 500
+        self.im_scale = 500
         
-        self.assertTrue(np.all(np.fliplr(M) == M))
-        self.assertEqual(M.shape, (600, 400))
-
-    def test_func2(self):
-        re = [-2, 0.5, 1000]
-        im = [-1, 1, 1000]
-        itr = 100
-        thresh = 2
-
-        M = mk.vectorized(re, im, itr, thresh)
-        self.assertTrue(np.all(np.fliplr(M) == M))
-    #def test_func3(self):
+        self.re = np.linspace(-2, 0.5, self.re_scale, dtype=np.float32)
+        self.im = np.linspace(-1, 1, self.im_scale, dtype=np.float32)
+        
+        self.max_iter = 100
+        self.thresh = 2
     
+    # Test if output shape is the same as the input - naive
+    def test_naive_shape(self):
+        M = mk.naive(self.re, self.im, self.max_iter, self.thresh)
+        self.assertEqual(M.shape, (self.re_scale, self.im_scale))
+
+    # Test if output shape is the same as the input - vectorized
+    def test_vectorized_shape(self):
+        M = mk.vectorized(self.re, self.im, self.max_iter, self.thresh)
+        self.assertEqual(M.shape, (self.re_scale, self.im_scale))
     
-    # Test that the output values are symmetric about the x-axis
-    # Test that the output values are symmetric about the y-axis
-    # Test that the output values are within the expected range
+    # Test runtime - naive
+    def test_naive_run_time(self):
+        t0 = time.time()
+        M = mk.naive(self.re, self.im, self.max_iter, self.thresh)
+        t1 = time.time() - t0
+        self.assertLess(t1, 30)
+
+    # Test runtime - vectorized
+    def test_vectorized_rum_time(self):
+        t0 = time.time()
+        M = mk.vectorized(self.re, self.im, self.max_iter, self.thresh)
+        t1 = time.time() - t0
+        self.assertLess(t1, 30)
+
+    # Test if solution is in range [0, max_iter] - naive
+    def test_naive_range(self):
+        M = mk.naive(self.re, self.im, self.max_iter, self.thresh)
+        self.assertGreaterEqual(M.min(), 0)
+        self.assertLessEqual(M.max(), self.max_iter)
+
+    # Test if solution is in range [0, max_iter] - vectorized
+    def test_vectorized_range(self):
+        M = mk.vectorized(self.re, self.im, self.max_iter, self.thresh)
+        self.assertGreaterEqual(M.min(), 0)
+        self.assertLessEqual(M.max(), self.max_iter)
 
 if __name__ == '__main__':
     unittest.main()

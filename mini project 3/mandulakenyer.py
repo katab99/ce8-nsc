@@ -5,6 +5,19 @@
 import numpy as np
 import multiprocessing as mp
 
+"""
+class Mandelbrot():
+
+    def __init__(self, re, im,  I, T):
+        self.re = np.linspace(re[0], re[1], re[2], dtype=np.float32)
+        self.im = np.linspace(im[0], im[1], im[2], dtype=np.float32)
+        self.max_iter = I
+        self.thresh = T
+    
+    def naive():
+        pass
+"""
+
 def create_imre(re_prop, im_prop):
     '''
     Returns 2 arrays 
@@ -39,22 +52,21 @@ def naive(re, im, itr, thresh):
         M : Mandelbrot dataset
     '''
 
-    #re_val, im_val = create_imre(re, im)
     M = np.zeros((re.size, im.size))
     
     for a in range(len(re)): 
         for b in range(len(im)):
             z = 0 + 0j
-            c = re[a] + im[b]
+            c = re[a] + im[b]*1j
 
             for i in range(itr):
                 z = z**2 + c
             
                 if abs(z) > thresh:
-                    M[a, b] = i
+                    M[b, a] = i
                     break
-            else:
-                M[a, b] = itr
+            #else:
+                #M[b, a] = itr
 
     return M
 
@@ -76,55 +88,12 @@ def vectorized(re, im, itr, thresh):
     # re_val, im_val = create_imre(re, im)
     M = np.zeros((re.size, im.size))
     z = np.zeros((re.size, im.size))
-    c = re + im[:, np.newaxis]
+    c = re + im[:, np.newaxis]*1j
 
     for i in range(itr):
         z = z**2 + c
         M[thresh <= abs(z)] = i
 
-    M[M == 0] = itr
+    #M[M == 0] = itr
 
     return M
-
-
-
-def parallel_mb(c_matrix, itr, thresh):
-    '''
-    TODO : maybe later
-    Helper function for parallelized implementation
-    '''
-    M = np.zeros(c_matrix.shape[0])
-    
-    for count, value in enumerate(c_matrix):
-        c = value
-        z = 0 + 0j
-        
-        for i in range(itr):
-            z = z**2 + c
-            
-            if abs(z) > thresh:
-                M[count] = i 
-                break
-        else:
-            M[count] = itr
-            
-    
-    return M
-
-def parallelize(func, proc_num, chunk_num, re, im, itr, thresh):
-    '''
-    TODO : maybe later
-    Parallelized implementation of Mandelbrot
-    '''
-
-    #re_val, im_val = create_imre(re, im)
-    comp_matrix = re + im[:, np.newaxis]
-    items = [(C, itr, thresh) for C in comp_matrix]
-
-    pool = mp.Pool(processes=proc_num)
-    output = [pool.starmap(func, items, chunksize=chunk_num)]
-    
-    pool.close()
-    pool.join()
-    
-    return output
